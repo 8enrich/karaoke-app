@@ -38,7 +38,7 @@ pip install -r requirements.txt
 - Crie um arquivo .env: 
 
 ```
-touch .env
+cp .env.example .env
 ```
 
 - Defina uma senha de administrador no .env seguindo o .env.example(Essa senha será usada para acessar a tela de administrador)
@@ -67,7 +67,7 @@ npm i
 - Crie um arquivo .env:
 
 ```
-touch .env
+cp .env.example .env
 ```
 
 - Defina o link do backend no .env seguindo o .env.example(Para permitir que os usuários da sua mesma rede possam acessar é necessário colocar seu IP)
@@ -81,5 +81,16 @@ REACT_APP_BACKEND_URL="http://192.168.0.1:8000"
 - Inicie a aplicação:
 
 ```
-npm run dev
+npm run start
+```
+
+
+----
+
+Para acessar basta digitar o IP da máquina que está rodando o front e a porta 3000
+
+#### Exemplo:
+
+```
+http://192.168.0.1:3000
 ```
