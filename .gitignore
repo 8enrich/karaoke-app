@@ -1,0 +1,9 @@
+
+back/venv/
+back/__pycache__/
+front/node_modules/
+updates.txt
+back/.env
+front/.env
+front/package-lock.json
+front/build/
