@@ -22,18 +22,6 @@ cd karaoke-app
 cd back
 ```
 
-- Crie uma venv:
-
-```
-uv venv
-```
-
-- Instale as dependências:
-
-```
-uv pip install -e 
-```
-
 - Crie um arquivo .env: 
 
 ```
@@ -46,7 +34,7 @@ basta escrever ela no campo de nome na tela inicial
 - Inicie a aplicação:
 
 ```
-uv uvicorn app:app --host 0.0.0.0 --port 8000
+uv run uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 
 ### Front:
