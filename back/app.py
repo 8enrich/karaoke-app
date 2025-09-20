@@ -16,18 +16,22 @@ import os
 app = FastAPI()
 router = APIRouter()
 
+
 async def event_stream():
     while True:
         queue = await get_queue()
         yield f"{json.dumps(queue)}"
         await asyncio.sleep(1)
 
+
 @router.get("/queue")
 async def queue_sse():
     return EventSourceResponse(event_stream(), ping=30)
 
+
 async def get_queue():
     return await SongDb.find_all()
+
 
 @router.get("/next")
 @is_admin
@@ -44,21 +48,25 @@ async def next(key: str = Depends(api_key)):
             break
         except HTTPException:
             SongDb.last_id += 1
-    search_query = song.name.lower() + ' ' + song.artist.lower()
+    search_query = song.name.lower() + " " + song.artist.lower()
     yt_url = song.link if song.link else YT_URL + search_query
     url = yt_url if song.sing else CIFRA_URL + search_query
     return url
+
 
 @router.get("/admin")
 @is_admin
 async def admin(key: str = Depends(api_key)):
     return True
 
+
 def generate_qr(data: str, file_name: str, darkMode: bool):
-    file_path = os.path.join("/home/enrich/projects/python/karaoke/front/public/", file_name)
+    file_path = os.path.join(
+        "/home/enrich/projects/python/karaoke/front/public/", file_name
+    )
     if os.path.exists(file_path):
         return file_path
-    
+
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.ERROR_CORRECT_L,
@@ -69,30 +77,33 @@ def generate_qr(data: str, file_name: str, darkMode: bool):
     qr.make(fit=True)
 
     img = qr.make_image(
-        fill_color='black' if not darkMode else 'white', 
-        back_color='white' if not darkMode else "black"
+        fill_color="black" if not darkMode else "white",
+        back_color="white" if not darkMode else "black",
     )
-    img.save(file_path)    
+    img.save(file_path)
+
 
 @router.get("/qr")
 @is_admin
 async def get_qr(ip: str, darkMode: bool, key: str = Depends(api_key)):
-    file_name = f"{ip}-{"darkMode" if darkMode else "lightMode"}.png"
+    file_name = f"{ip}-{'darkMode' if darkMode else 'lightMode'}.png"
     data = ip + ":3000"
     generate_qr(data, file_name, darkMode)
     return file_name
 
+
 app.include_router(router)
-app.include_router(user_router, prefix='/user', tags=['user'])
-app.include_router(song_router, prefix='/song', tags=['song'])
+app.include_router(user_router, prefix="/user", tags=["user"])
+app.include_router(song_router, prefix="/song", tags=["song"])
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  
-    allow_headers=["*"]
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
 
 @app.get("/", include_in_schema=False)
 def root():

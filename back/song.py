@@ -5,37 +5,59 @@ from re import match
 
 from user import UserDb
 
+
 def is_youtube_video_link(url: str) -> bool:
     youtube_video_regex = (
-        r'(https?://)?(www\.)?youtube\.com/watch\?v=[\w-]+'
-        r'|https?://youtu\.be/[\w-]+'
+        r"(https?://)?(www\.)?youtube\.com/watch\?v=[\w-]+"
+        r"|https?://youtu\.be/[\w-]+"
     )
     return bool(match(youtube_video_regex, url))
 
+
 def validate_name(value):
     if len(value) > 50:
-        raise HTTPException(detail={"song": "O nome da música deve conter até 50 caracteres"}, status_code=500)
+        raise HTTPException(
+            detail={"song": "O nome da música deve conter até 50 caracteres"},
+            status_code=500,
+        )
     if not value.strip():
-        raise HTTPException(detail={"song": "Por favor, digite uma música"}, status_code=500)
+        raise HTTPException(
+            detail={"song": "Por favor, digite uma música"}, status_code=500
+        )
     return value
+
 
 def validate_artist(value):
     if value is not None and len(value) > 50:
-        raise HTTPException(detail={"artist": "O nome do artista deve conter até 50 caracteres"}, status_code=500)
+        raise HTTPException(
+            detail={"artist": "O nome do artista deve conter até 50 caracteres"},
+            status_code=500,
+        )
     return value
 
 
 def validate_link(value):
     if value is not None and len(value) > 100:
-        raise HTTPException(detail={"link": "O link da música deve conter até 100 caracteres"}, status_code=500)
+        raise HTTPException(
+            detail={"link": "O link da música deve conter até 100 caracteres"},
+            status_code=500,
+        )
     if value and not is_youtube_video_link(value):
-        raise HTTPException(detail={"link": "Link inválido, coloque um link do youtube"}, status_code=500)
+        raise HTTPException(
+            detail={"link": "Link inválido, coloque um link do youtube"},
+            status_code=500,
+        )
     return value
+
 
 def validate_sing(value):
     if value not in (True, False):
-        raise HTTPException(detail={"sing": "É necessário dizer se você quer cantar ou tocar a música"}, status_code=500)
+        raise HTTPException(
+            detail={"sing": "É necessário dizer se você quer cantar ou tocar a música"},
+            status_code=500,
+        )
     return value
+
 
 class SongParams(BaseModel):
     name: str
@@ -58,6 +80,7 @@ class SongParams(BaseModel):
     @field_validator("sing")
     def validate_sing(cls, value):
         return validate_sing(value)
+
 
 class UpdateSongParams(BaseModel):
     name: Optional[str] = None
@@ -89,9 +112,18 @@ class UpdateSongParams(BaseModel):
             return validate_sing(value)
         return value
 
-class SongModel:
 
-    def __init__(self, id: int, name: str, link: str, queue_position: int, id_user: str, artist: str, sing: bool):
+class SongModel:
+    def __init__(
+        self,
+        id: int,
+        name: str,
+        link: str,
+        queue_position: int,
+        id_user: str,
+        artist: str,
+        sing: bool,
+    ):
         self.id = id
         self.name = name
         self.link = link
@@ -105,24 +137,28 @@ class SongModel:
 
     async def to_dto(self) -> dict:
         return {
-            'id': self.id,
-            'name': self.name,
-            'link': self.link,
-            'artist': self.artist,
-            'user': (await UserDb.find(self.id_user)).to_dto(),
-            'queue_position': self.queue_position,
-            'sing': self.sing,
+            "id": self.id,
+            "name": self.name,
+            "link": self.link,
+            "artist": self.artist,
+            "user": (await UserDb.find(self.id_user)).to_dto(),
+            "queue_position": self.queue_position,
+            "sing": self.sing,
         }
 
-class SongDb:
 
+class SongDb:
     songs = dict()
     songs_id = 1
     last_id = 1
 
     @classmethod
-    async def create(cls, name: str, link: str, id_user: str, artist: str, sing: bool) -> SongModel:
-        song = SongModel(cls.songs_id, name, link, len(cls.songs) + 1, id_user, artist, sing)
+    async def create(
+        cls, name: str, link: str, id_user: str, artist: str, sing: bool
+    ) -> SongModel:
+        song = SongModel(
+            cls.songs_id, name, link, len(cls.songs) + 1, id_user, artist, sing
+        )
         cls.songs[cls.songs_id] = song
         cls.songs_id += 1
         return song

@@ -16,16 +16,23 @@ admin_key = getenv("ADMIN_KEY")
 
 api_key = APIKeyHeader(name="auth")
 
+
 def verify_key(key: str = Depends(api_key)):
     if key not in UserDb.users.keys():
-        raise HTTPException(detail="Por favor, crie um usuário primeiro", status_code=500)
+        raise HTTPException(
+            detail="Por favor, crie um usuário primeiro", status_code=500
+        )
     return key
+
 
 def is_admin(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
-        key = kwargs.get('key')
+        key = kwargs.get("key")
         if key != admin_key:
-            raise HTTPException(detail="Você não tem permissão para acessar", status_code=401) 
+            raise HTTPException(
+                detail="Você não tem permissão para acessar", status_code=401
+            )
         return await func(*args, **kwargs)
+
     return wrapper

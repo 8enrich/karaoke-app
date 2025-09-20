@@ -1,0 +1,12 @@
+[project]
+name = "karaoke-app"
+version = "0.1.0"
+description = "An app to manage karaoke queue"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.116.2",
+    "python-dotenv>=1.1.1",
+    "qrcode>=8.2",
+    "sse-starlette>=3.0.2",
+    "uvicorn>=0.36.0",
+]
